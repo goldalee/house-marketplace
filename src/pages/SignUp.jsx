@@ -5,19 +5,20 @@ import {getAuth, createUserWithEmailAndPassword, updateProfile} from 'firebase/a
 import {db} from '../firebase.config'
 import {ReactComponent as ArrowRighIcon} from '../assets/svg/keyboardArrowRightIcon.svg'
 import visibilityIcon from '../assets/svg/visibilityIcon.svg'
-import { async } from '@firebase/util'
+//import { async } from '@firebase/util'
 import {setDoc, doc, serverTimestamp} from 'firebase/firestore'
 import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
+import OAuth from '../components/OAuth'
 
 function SignUp () {
     const [showPassword, setShowPassword] = useState(false)
     const [formData, setFormData] = useState({
-        name:'',
-        email:'',
-        password:'',
+        name:"",
+        email:"",
+        password:"",
     })
-    const {name, email, password}=formData
+    const {name, email, password} = formData
 
     const navigate = useNavigate()
 
@@ -27,6 +28,7 @@ function SignUp () {
             [e.target.id]:e.target.value,
         }))
     }
+
     const onSubmit = async (e) => {
         e.preventDefault()
         try {
@@ -80,6 +82,7 @@ function SignUp () {
             </div>
         </form>
         {/*Google OAuth Component*/}
+        <OAuth />
         <Link to='/sign-in' className='registerLink'>
          Sign in Instead
         </Link>
