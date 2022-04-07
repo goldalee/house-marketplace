@@ -10,6 +10,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import Profile from './pages/Profile';
 import Navbar from './components/Navbar';
 import PrivateRoutes from './components/PrivateRoutes';
+import Spinner from './components/Spinner';
 
 
 
