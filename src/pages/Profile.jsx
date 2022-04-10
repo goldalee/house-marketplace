@@ -1,10 +1,13 @@
 import React from 'react'
 import {getAuth, updateProfile} from 'firebase/auth'
 import {useState} from 'react'
+import {Link} from 'react-router-dom'
 import {useNavigate} from 'react-router-dom'
 import {db} from '../firebase.config'
 import {updateDoc, doc} from 'firebase/firestore'
 import {toast} from 'react-toastify'
+import arrowRight from '../assets/svg/keyboardArrowRightIcon.svg'
+import homeIcon from '../assets/svg/homeIcon.svg'
 
 function Profile () {
     const auth = getAuth()
@@ -81,6 +84,11 @@ function Profile () {
             />
         </form>
     </div>
+    <Link to='/create-lising' className="createListing">
+        <img src={homeIcon} alt="home" />
+        <p>Sell or rent your home</p>
+        <img src={arrowRight} alt="arrow right" />
+    </Link>
   </main>
   </div>
   )

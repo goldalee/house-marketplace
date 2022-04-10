@@ -11,6 +11,7 @@ import Profile from './pages/Profile';
 import Navbar from './components/Navbar';
 import PrivateRoutes from './components/PrivateRoutes';
 import Spinner from './components/Spinner';
+import CreateListing from './pages/CreateListing';
 
 
 
@@ -20,7 +21,7 @@ function App() {
       <Router>
         <Routes>
           <Route path='/' element={<Explore />} />
-          <Route path='/offers' element={<Offers />} />
+          <Route path='/offer' element={<Offers />} />
           <Route path='/category/:categoryName' element={<Category />} />
          <Route path='/profile' element={<PrivateRoutes />} >
             <Route path='/profile' element={<Profile />} />
@@ -28,6 +29,7 @@ function App() {
           <Route path='/sign-in' element={<SignIn />} />
           <Route path='/sign-up' element={<SignUp />} />
           <Route path='/forgot-password' element={<ForgotPassword />} />
+          <Route path='/create-listing' element={<CreateListing />} />
         </Routes>
         <Navbar />
       </Router>
