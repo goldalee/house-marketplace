@@ -1,10 +1,14 @@
 import React from 'react'
 import {useState, useEffect, useRef} from 'react'
 import {getAuth, onAuthStateChanged} from 'firebase/auth'
+import {getStorage, ref, uploadBytesResumable, getDownloadURL} from 'firebase/storage'
+import {db} from '../firebase.config'
 import {useNavigate} from 'react-router-dom'
 import {toast} from 'react-toastify'
+import {v4 as uuidv4} from 'uuid'
 import Spinner from '../components/Spinner'
 import { async } from '@firebase/util'
+import {addDoc, collection, serverTimestamp} from 'firebase/firestore'
 
 
 function CreateListing(){
@@ -74,8 +78,9 @@ const onSubmit = async(e)=>{
 
     if(geolocationEnabled){
         const response = await fetch(
-            `http://api.positionstack.com/v1/forward?access_key=864f6d62ca0c32488eb4cdb47632e574&query=${address}`)
-        const data = await response.json()
+           // `http://api.positionstack.com/v1/forward?access_key=864f6d62ca0c32488eb4cdb47632e574&query=${address}`)
+            `http://api.positionstack.com/v1/forward?access_key=${process.env.REACT_APP_GEOCODE_API_KEY}&query=${address}`)
+           const data = await response.json()
         setFormData((prevState)=>({
             ...prevState,
             latitude: data.data[0]?.latitude ?? 0,
@@ -97,9 +102,83 @@ const onSubmit = async(e)=>{
     }else{
         geolocation.lat = latitude
         geolocation.lng = longitude
-        location=address
+        //location=address
+        //console.log(geolocation, location)
     }
+    //Store image in firebase
+    const storeImage = async(image)=>{
+        return new Promise((resolve, reject)=>{
+            const storage = getStorage()
+            const fileName =  `${auth.currentUser.uid}-${image.name}-${uuidv4()}`
+
+            const storageRef=ref(storage, 'images/'+ fileName)
+
+            const uploadTask = uploadBytesResumable(storageRef, image)
+
+            // Register three observers:
+            // 1. 'state_changed' observer, called any time the state changes
+            // 2. Error observer, called on failure
+            // 3. Completion observer, called on successful completion
+uploadTask.on('state_changed', 
+(snapshot) => {
+  const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+  console.log('Upload is ' + progress + '% done');
+  switch (snapshot.state) {
+    case 'paused':
+      console.log('Upload is paused');
+      break;
+    case 'running':
+      console.log('Upload is running');
+      break;
+  }
+}, 
+(error) => {
+  // Handle unsuccessful uploads
+  reject(error)
+}, 
+() => {
+  // Handle successful uploads on complete
+  // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+  getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+    resolve(downloadURL);
+  });
+}
+);
+
+        })
+    }//end of store image function
+
+    const imgUrls = await Promise.all(
+        [...images].map((image)=> storeImage(image))
+    ).catch(()=>{
+        setLoading(false)
+        toast.error('Images not uploaded')
+        return 
+    })
+
+    //console.log(imgUrls)
+
+    const formDataCopy ={
+        ...formData,
+        imgUrls,
+        geolocation,
+        timestamp:serverTimestamp()
+    }
+
+    formDataCopy.location = address
+    delete formDataCopy.images  //the images
+    delete formDataCopy.address//the houses' address
+
+    //location && (formDataCopy.location = location)
+
+    !formDataCopy.offer && delete formDataCopy.discountedPrice
+
+    const docRef = await addDoc(collection(db,'listings'), formDataCopy)
+    
+
     setLoading(false)
+    toast.success('Listing saved')
+    navigate(`/category/${formDataCopy.type}/${docRef.id}`)
     
 } 
 /*
