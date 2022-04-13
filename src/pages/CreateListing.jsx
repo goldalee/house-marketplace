@@ -9,6 +9,7 @@ import {v4 as uuidv4} from 'uuid'
 import Spinner from '../components/Spinner'
 import { async } from '@firebase/util'
 import {addDoc, collection, serverTimestamp} from 'firebase/firestore'
+import Listing from './Listing'
 
 
 function CreateListing(){
@@ -102,7 +103,9 @@ const onSubmit = async(e)=>{
     }else{
         geolocation.lat = latitude
         geolocation.lng = longitude
-        //location=address
+        //listing.latitude = latitude
+        //listing.longitude =longitude
+        location=address
         //console.log(geolocation, location)
     }
     //Store image in firebase
