@@ -1,3 +1,7 @@
+# Project Description
+This project was built with Reactjs with Firebase at the backend.
+The Web Application displays houses for rent and sale and allows you to contact the lister for more details.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
